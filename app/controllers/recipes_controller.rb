@@ -1,5 +1,7 @@
 class RecipesController < ApplicationController
-
+    before_action :set_recipe,only: [:edit,:update,:show,:like]
+    before_action :require_user,except: [:show,:index]
+    before_action :require_same_user,only: [:edit,:update]
 
 def index
   #@recipes=Recipe.all.sort_by{|likes| likes.thumbs_up_total}.reverse
@@ -7,7 +9,7 @@ def index
 end	
 
 def show
-  @recipe= Recipe.find(params[:id])
+ 
 end	
 
 def new
@@ -16,7 +18,7 @@ end
 
 def create
 @recipe=Recipe.new(recipe_params)
-@recipe.chef=Chef.find(2)
+@recipe.chef=current_user
 
 if @recipe.save
 
@@ -33,7 +35,7 @@ end
 
 def update
 
-	@recipe=Recipe.find(params[:id])
+	
       if(@recipe.update(recipe_params))
           flash[:success]="Your recipe was updated successfully"
           redirect_to recipe_path(@recipe)
@@ -44,12 +46,11 @@ def update
 end	
 
 def edit
-  @recipe=Recipe.find(params[:id])
 end	
 
 def like
-	@recipe=Recipe.find(params[:id])
-	like=Like.create(like: params[:like],chef: Chef.first,recipe: @recipe)
+	
+	like=Like.create(like: params[:like],chef: current_user,recipe: @recipe)
 	if like.valid?
 	flash[:success]="Your selection was successfull"
 	redirect_to :back
@@ -61,6 +62,17 @@ def like
 end	
 
 private
+
+def set_recipe
+  @recipe=Recipe.find(params[:id])
+end
+
+def require_same_user
+    if current_user!=@recipe.chef
+    	flash[:danger]="You can only edit your own recipes"
+    	redirect_to recipes_path
+    end	
+end	
 
 def recipe_params
   params.require(:recipe).permit(:name,:summary,:description, :picture)
