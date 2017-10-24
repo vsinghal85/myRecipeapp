@@ -30,7 +30,7 @@ gem 'jquery-rails'
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
-
+gem 'net-ssh'
 gem 'will_paginate','3.1.0'
 gem 'bootstrap-will_paginate','1.0.0'
 # Use Redis adapter to run Action Cable in production
